@@ -1,0 +1,43 @@
+enum Role{
+    administrator
+    authenticated
+}
+
+directive @hasRole(roles: [Role]) on FIELD_DEFINITION
+
+type User {
+    id: ID!
+    firstName: String!
+    lastName: String!
+    email: String!
+    created: Int!
+    updated: Int!
+    roles: [String]!
+}
+type Token{
+    token: String!
+    expired: Int!
+    user: User!
+}
+
+type Query {
+    me: User! @hasRole(roles: [authenticated])
+    users: [User!]! @hasRole(roles: [administrator])
+}
+
+input UpdateUser{
+    firstName: String!
+    lastName: String!
+    email: String!
+}
+
+type Mutation {
+    register(firstName: String!, lastName: String!, email: String!, password: String!): User!
+    updateUser(id: ID!, input: UpdateUser!): User!
+    login(email: String!, password: String!): Token!
+}
+
+type Subscription{
+    userCreated: User!
+}
+
